@@ -1,0 +1,61 @@
+生成HEX文件,IAR进行下面设置
+1、project->options->linker->output  Format选中第二个other,不要选Debug information c-spy
+
+/*****************************************************************
+2、project->options->linker->extra options  选中use command line options,在下面空白处添加:
+
+-M(CODE)[(_CODEBANK_START+_FIRST_BANK_ADDR)-(_CODEBANK_END+_FIRST_BANK_ADDR)]*_NR_OF_BANKS+10000=0x8000
+
+
+此步可以不要，如果“1、”不行时，再按此操作
+//此步在串口向PC机发送信息时需要加上
+*****************************************************************/
+
+
+workspace→debug/release     新的编译环境的创建：project→Edit Configuration
+         
+程序中有关于
+#ifdef COMPLETE_APPLICATION
+void rf_test_main(void){
+#else
+  void main(void){
+#endif
+其定义部分在project→option→C/C++Compiler→Preprocessor的Defined symbols 中修改
+
+
+
+怎样在IAR中加入编译所需库的头文件？
+options窗口 的 c/c++ compiler 选项 和 Assembler选项里， 
+preprocessor栏： 
+
+$TOOLKIT_DIR$\INC\ 
+$TOOLKIT_DIR$\INC\CLIB\ 
+（C:\Program Files\IAR Systems\Embedded Workbench 5.3\8051\inc再将  头文件拷贝到上面文件夹下）
+以上两行的 $TOOLKIT_DIR$\ 意思是安装目录 
+为了方便，在additional include directories:下面的空白框里，填上你的包含文件目录，如果为了备份和拷贝方便 
+最好把文件放到项目目录，设置方法如下 
+$PROJ_DIR$\ 即你当前工作的workspace的目录 
+..\表示对应目录的上一层 
+比如 
+$PROJ_DIR$\ ..\inc 表示你的WORKSPACE目录上一层的INC目录
+
+
+(转自：http://nt1985.blog.163.com/blog/static/1232562702009629102437936/
+1.在定义包含文件路径的文本框中，定义包含文件的路径有两种很重要的语法。
+    一是$TOOLKIT_DIR$，这个语法表示包含文件的路径在IAR 安装路径的8051 文件夹下，也就是说如果IAR 安装在C 盘中，那么它就表示C:\Program Files\IAR Systems\Embedded Workbench 4.05 Evaluation version\8051 这个路径。
+二是$PROJ_DIR$，这个语法表示包含文件的路径在工程文件中，也就是和eww 文件和ewp 文件相同的目录。
+和这两个语言配合使用的还有两个很重要的符号，这就是“\..”和“\文件夹名”。
+\..：表示返回上一级文件夹
+\文件夹名：表示进入名为“文件夹名”的文件夹。例如：
+$TOOLKIT_DIR$\inc\ ： 这句话的意思是包含文件指向C:\Program Files\IAR Systems\Embedded Workbench 4.05 Evaluation version\8051\inc。
+$PROJ_DIR$\..\Source：这句话的意思是包含文件指向工程目录的上一级目录中的Source 文件夹中。例如：假设我们的工程放在D:\project\IAR 中，哪么$PROJ_DIR$\..\就将路径指向了D:\project 中，再执行\Source，就表示将路径指向了D:\project\Source 中。
+2.在宏定义文件的文本框中，是用于用户自定义的一些宏定义，他的功能和#define 相似，在具体应用中多做位条件编译使用。)
+
+
+C中置位与清位的操作：&=~  和 ｜=
+
+IAR中自带缩进工具，快捷键是CTL+T
+
+在做片内温度的测试中，IAR环境的配置导致串口显示不正常，需要更改的配置：
+option->Target->Device information->Device要选中cc2430
+（若不成功，则再改Library option->两个formatter 分别选择Small上和Large下）
